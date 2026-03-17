@@ -1,4 +1,6 @@
-import type {IService} from "@serv/IService"
+export interface IService {
+  getServiceId(): string
+}
 
 export interface HttpContext {
   params: Record<string, string>
