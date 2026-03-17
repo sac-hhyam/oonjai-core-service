@@ -6,4 +6,5 @@ export interface IUserRepository {
   delete(user: User): void
   insert(user: User): UUID
   findById(id: UUID): User | undefined
+  findByEmail(email: string): User | undefined
 }

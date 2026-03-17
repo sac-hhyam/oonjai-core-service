@@ -27,6 +27,10 @@ export class UserService implements IService {
     return this.userRepo.findById(id)
   }
 
+  public findUserByEmail(email: string): User | undefined {
+    return this.userRepo.findByEmail(email)
+  }
+
   public updateUser(id: UUID, data: {firstname?: string, lastname?: string, email?: string}) {
     const user = this.userRepo.findById(id)
     if (!user) {

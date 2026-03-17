@@ -1,28 +1,35 @@
-import type {Endpoint, HttpContext, HttpResult, Method} from "@http/HttpContext"
+import type {Endpoint, HttpContext, HttpResult, IService, Method} from "@http/HttpContext"
+import type {ISessionService} from "@serv/ISessionService"
+import {Session} from "@entity/Session"
 import {internalError, notFound} from "@http/HttpContext"
-import type {IService} from "@serv/IService"
 
 interface Route {
   method: Method
   segments: string[]
-  invoke: (ctx: HttpContext) => Promise<HttpResult>
+  invoke: (ctx: HttpContext, session: Session | null) => Promise<HttpResult>
 }
 
 export class Router {
   private routes: Route[] = []
 
-  public route(endpoint: Endpoint, service: IService[]): this {
+  constructor(private sessionService: ISessionService) {}
+
+  public route(endpoint: Endpoint, services: IService[]): this {
     const segments = endpoint.path.split("/").filter(Boolean)
     this.routes.push({
       method: endpoint.method,
       segments,
-      invoke: (ctx) => endpoint.handler(ctx, service),
+      invoke: (ctx, session) => endpoint.handler(ctx, services, session),
     })
     return this
   }
 
-  public async dispatch(method: string, pathname: string, ctx: Omit<HttpContext, "params">): Promise<HttpResult> {
+  public async dispatch(method: string, pathname: string, ctx: HttpContext): Promise<HttpResult> {
     const incoming = pathname.split("/").filter(Boolean)
+
+    // Resolve session once per request from the Authorization header
+    const rawToken = ctx.headers["authorization"]?.replace(/^Bearer\s+/i, "") ?? null
+    const session = rawToken ? await this.sessionService.resolveSession(rawToken) : null
 
     for (const route of this.routes) {
       if (route.method !== method) continue
@@ -45,7 +52,7 @@ export class Router {
       if (!matched) continue
 
       try {
-        return await route.invoke({...ctx, params})
+        return await route.invoke({...ctx, params}, session)
       } catch (err) {
         const message = err instanceof Error ? err.message : "internal server error"
         return internalError(message)

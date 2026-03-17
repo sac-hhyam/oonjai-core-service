@@ -1,1 +1,3 @@
-export type {IService} from "@http/HttpContext"
+export interface IService {
+  getServiceId(): string
+}

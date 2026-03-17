@@ -1,7 +1,7 @@
 import type { IUserRepository } from "./IUserRepository"
 import type {ITestDatabase} from "../lib/TestDatabase"
 import {User} from "@entity/User"
-import type {UUID} from "@type/uuid"
+import {UUID} from "@type/uuid"
 import {Timestamp} from "@type/timestamp"
 
 
@@ -32,4 +32,11 @@ export class TestUserRepository implements IUserRepository {
     return new User(user.email, user.firstname, user.lastname, new Timestamp(user.createdAt), user.role, id)
   }
 
+  findByEmail(email: string): User | undefined {
+    const all = this.db.getAll("user")
+    const record = all.find((u) => u.email === email)
+    if (!record) return undefined
+    const id = new UUID(record.id)
+    return new User(record.email, record.firstname, record.lastname, new Timestamp(record.createdAt), record.role, id)
+  }
 }
