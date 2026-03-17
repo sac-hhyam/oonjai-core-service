@@ -6,23 +6,40 @@
 
 ## Table of Contents
 
-1. [Project Structure](#1-project-structure)
-2. [Architecture Overview](#2-architecture-overview)
-3. [Layer Reference](#3-layer-reference)
-   - [Types](#31-types--typetype)
-   - [Entities & DTOs](#32-entities--dto--entityentityts--entityentitydtots)
-   - [Repositories](#33-repositories--repositoryirepositoryts)
-   - [Services](#34-services--servicesservicets)
-   - [HTTP Infrastructure](#35-http-infrastructure--http)
-   - [Endpoints](#36-endpoints--endpoint)
-4. [Path Aliases](#4-path-aliases)
-5. [How to Add a New Endpoint](#5-how-to-add-a-new-endpoint)
-6. [Endpoint Registration Flow](#6-endpoint-registration-flow)
-7. [Conventions](#7-conventions)
+1. [Full System Diagram](#1-full-system-diagram)
+2. [Project Structure](#2-project-structure)
+3. [Architecture Overview](#3-architecture-overview)
+4. [Layer Reference](#4-layer-reference)
+   - [Types](#41-types--typetype)
+   - [Entities & DTOs](#42-entities--dto--entityentityts--entityentitydtots)
+   - [Repositories](#43-repositories--repositoryirepositoryts)
+   - [Services](#44-services--servicesservicets)
+   - [HTTP Infrastructure](#45-http-infrastructure--http)
+   - [Endpoints](#46-endpoints--endpoint)
+5. [Path Aliases](#5-path-aliases)
+6. [How to Add a New Endpoint](#6-how-to-add-a-new-endpoint)
+7. [Endpoint Registration Flow](#7-endpoint-registration-flow)
+8. [Conventions](#8-conventions)
 
 ---
 
-## 1. Project Structure
+## 1. Full System Diagram
+
+![Full System Diagram](./full-system-diagram.svg)
+
+The diagram is organised into three horizontal swim lanes:
+
+| Lane | What's in it |
+|------|-------------|
+| **Infrastructure** | `TestFSDatabase`, `TestUserRepository`, `TestSeniorRepository`, `BunAdapter`, `Router`, `EndpointRegistry` — all I/O and framework-facing code |
+| **Application** | `UserService`, `SeniorManagementService`, all `Endpoint` files — orchestration and HTTP handling |
+| **Entity** | `User`, `UserDTO`, `Senior`, `SeniorDTO`, `UUID`, `Timestamp`, `RoleEnum` — pure domain model with no external dependencies |
+
+Dependency arrows flow **downward only** (Application → Entity, Infrastructure → Application). No upward arrows exist — inner layers never know about outer layers.
+
+---
+
+## 2. Project Structure
 
 ```
 src/
@@ -73,7 +90,7 @@ src/
 
 ---
 
-## 2. Architecture Overview
+## 3. Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -122,9 +139,9 @@ Endpoint → Service → Repository → Database
 
 ---
 
-## 3. Layer Reference
+## 4. Layer Reference
 
-### 3.1 Types — `@type/*`
+### 4.1 Types — `@type/*`
 
 Primitive value objects shared across all layers.
 
@@ -136,7 +153,7 @@ Primitive value objects shared across all layers.
 
 ---
 
-### 3.2 Entities & DTO — `@entity/Entity.ts` + `@entity/EntityDTO.ts`
+### 4.2 Entities & DTO — `@entity/Entity.ts` + `@entity/EntityDTO.ts`
 
 Entities are the domain model. They hold state and domain logic. DTOs are plain objects for serialisation.
 
@@ -158,7 +175,7 @@ class User {
 
 ---
 
-### 3.3 Repositories — `@repo/IRepository.ts`
+### 4.3 Repositories — `@repo/IRepository.ts`
 
 Contracts for data access. Business logic never imports a concrete repository class.
 
@@ -175,7 +192,7 @@ Current implementations (`TestUserRepository`, `TestSeniorRepository`) use `ITes
 
 ---
 
-### 3.4 Services — `@serv/ServiceName.ts`
+### 4.4 Services — `@serv/ServiceName.ts`
 
 Services hold all business logic. Every service **must** implement `IService`.
 
@@ -210,7 +227,7 @@ export class SeniorManagementService implements IService {
 
 ---
 
-### 3.5 HTTP Infrastructure — `@http/*`
+### 4.5 HTTP Infrastructure — `@http/*`
 
 #### `HttpContext.ts` — core contracts
 
@@ -269,7 +286,7 @@ Translates `Bun.serve()` requests into `HttpContext`, calls `router.dispatch()`,
 
 ---
 
-### 3.6 Endpoints — `@endpoint/domain/actionName.ts`
+### 4.6 Endpoints — `@endpoint/domain/actionName.ts`
 
 Each file exports **a single named `Endpoint` constant** — no classes, no factories, no state.
 
@@ -290,7 +307,7 @@ The service tuple is declared in the generic `Endpoint<[...]>`. The registry bin
 
 ---
 
-## 4. Path Aliases
+## 5. Path Aliases
 
 | Alias | Resolves to |
 |-------|-------------|
@@ -303,7 +320,7 @@ The service tuple is declared in the generic `Endpoint<[...]>`. The registry bin
 
 ---
 
-## 5. How to Add a New Endpoint
+## 6. How to Add a New Endpoint
 
 > Example: `GET /users` — list all users.
 
@@ -386,7 +403,7 @@ registry.register(seniorSummary, [userService, seniorManagementService])
 
 ---
 
-## 6. Endpoint Registration Flow
+## 7. Endpoint Registration Flow
 
 ```
 index.ts
@@ -413,7 +430,7 @@ Runtime: PUT /users/abc-123
 
 ---
 
-## 7. Conventions
+## 8. Conventions
 
 | Rule | Detail |
 |------|--------|
