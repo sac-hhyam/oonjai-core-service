@@ -13,6 +13,8 @@ export interface HttpContext {
 export interface HttpResult {
   status: number
   body?: unknown
+  contentType?: string
+  redirect?: string
 }
 
 export type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
@@ -30,6 +32,7 @@ export type Endpoint<S extends IService[] = IService[]> = {
 }
 
 export const ok = (body?: unknown): HttpResult => ({ status: 200, body })
+export const redirectTo = (url: string): HttpResult => ({ status: 302, redirect: url })
 export const created = (body?: unknown): HttpResult => ({ status: 201, body })
 export const noContent = (): HttpResult => ({ status: 204 })
 export const notFound = (message = "not found"): HttpResult => ({ status: 404, body: { message } })

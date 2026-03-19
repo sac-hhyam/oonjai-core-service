@@ -33,6 +33,14 @@ export function serveBun(router: Router, options: BunAdapterOptions = {}): void 
         return new Response(null, {status: 204, headers: cors})
       }
 
+      // Serve static files from ./public/
+      if (req.method === "GET") {
+        const staticFile = Bun.file(`./public${url.pathname}`)
+        if (await staticFile.exists()) {
+          return new Response(staticFile, {headers: cors})
+        }
+      }
+
       const query: Record<string, string> = {}
       url.searchParams.forEach((value, key) => {
         query[key] = value
@@ -44,8 +52,8 @@ export function serveBun(router: Router, options: BunAdapterOptions = {}): void 
       })
 
       let body: unknown = undefined
-      const contentType = req.headers.get("content-type") ?? ""
-      if (contentType.includes("application/json") && req.body) {
+      const reqContentType = req.headers.get("content-type") ?? ""
+      if (reqContentType.includes("application/json") && req.body) {
         try {
           body = await req.json()
         } catch {
@@ -55,13 +63,23 @@ export function serveBun(router: Router, options: BunAdapterOptions = {}): void 
 
       const result = await router.dispatch(req.method, url.pathname, {query, headers, body, params: {}})
 
-      return new Response(
-        result.body !== undefined ? JSON.stringify(result.body) : null,
-        {
+      if (result.redirect) {
+        return new Response(null, {
           status: result.status,
-          headers: {"Content-Type": "application/json", ...cors},
-        }
-      )
+          headers: {"Location": result.redirect, ...cors},
+        })
+      }
+
+      const resContentType = result.contentType ?? "application/json"
+      const responseBody =
+        result.body !== undefined
+          ? resContentType.startsWith("text/") ? (result.body as string) : JSON.stringify(result.body)
+          : null
+
+      return new Response(responseBody, {
+        status: result.status,
+        headers: {"Content-Type": resContentType, ...cors},
+      })
     },
   })
 
