@@ -17,7 +17,9 @@ export const lineCallback: Endpoint<[LineAuthService, AuthService]> = {
       return internalError("missing_code_or_state")
     }
 
-    if (!lineService.validateState(state)) {
+    // Validate state and recover the redirect_url the client originally supplied
+    const stateResult = lineService.validateState(state)
+    if (!stateResult.valid) {
       return internalError("invalid_state")
     }
 
@@ -44,13 +46,13 @@ export const lineCallback: Endpoint<[LineAuthService, AuthService]> = {
         sessionToken = await authService.login(lineEmail)
       }
 
-      // Set httpOnly session cookies and redirect to the frontend
-      const frontendUrl = process.env["FRONTEND_URL"] ?? "http://localhost:3000"
+      // Redirect to the URL requested by the client, or fall back to FRONTEND_URL env var
+      const destination = stateResult.redirectUrl ?? process.env["FRONTEND_URL"] ?? "http://localhost:3000"
       return withCookies(
         sessionCookies(sessionToken.accessToken, sessionToken.refreshToken),
-        redirectTo(frontendUrl)
+        redirectTo(destination)
       )
-    } catch (err) {
+    } catch {
       return internalError("auth error")
     }
   },
