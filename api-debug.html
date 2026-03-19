@@ -12,6 +12,24 @@
       --accent-hover: #818cf8; --green: #22c55e; --red: #ef4444;
       --yellow: #f59e0b; --orange: #f97316;
     }
+    .btn-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.875rem 1.5rem;
+      background: #06C755;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .btn-line:hover { background: #05b34b; }
     body {
       background: var(--bg); color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -130,6 +148,16 @@
     .save-id-btn { font-size: 10px; padding: 2px 7px; border-radius: 4px; background: var(--accent); color: #fff; border: none; cursor: pointer; font-weight: 500; }
     .save-id-btn:hover { background: var(--accent-hover); }
     .response-body { padding: 12px 14px; font-family: "SF Mono","Fira Code",monospace; font-size: 12px; line-height: 1.6; white-space: pre-wrap; word-break: break-all; color: #a5f3fc; max-height: 380px; overflow-y: auto; }
+    /* ── Cookies ── */
+    .cookie-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; gap: 6px; }
+    .cookie-name { font-family: monospace; font-size: 11px; color: var(--muted); flex-shrink: 0; }
+    .cookie-val  { font-family: monospace; font-size: 11px; color: var(--text); max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cookie-httponly { font-size: 10px; color: var(--yellow); flex-shrink: 0; }
+    .cookie-tag-present { font-size: 10px; color: var(--green); }
+    .cookie-tag-absent  { font-size: 10px; color: var(--muted); }
+    .btn-sm { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: var(--accent); color: #fff; border: none; cursor: pointer; width: 100%; margin-top: 6px; }
+    .btn-sm:hover { background: var(--accent-hover); }
+    .source-tag { font-size: 9px; color: var(--accent); font-weight: 400; margin-left: 4px; }
   </style>
 </head>
 <body>
@@ -148,6 +176,18 @@
   <div id="session-badge">
     <div class="badge-label">Logged in as</div>
     <div class="badge-user empty" id="session-user">— not logged in —</div>
+  </div>
+
+  <!-- Cookies -->
+  <div class="workspace">
+    <div class="section-toggle open" onclick="toggleSection(this,'cookie-body')">
+      <span>Cookies</span><span class="chev">▶</span>
+    </div>
+    <div class="section-body open" id="cookie-body">
+      <div id="cookie-list"><span style="color:var(--muted);font-size:11px">Loading…</span></div>
+      <button class="btn-sm" onclick="refreshCookies()">↻ Refresh</button>
+      <button class="btn-sm" style="margin-top:3px;background:var(--surface);border:1px solid var(--border);color:var(--text)" onclick="detectCookieSession()">Detect cookie session</button>
+    </div>
   </div>
 
   <!-- Context IDs -->
@@ -270,6 +310,12 @@
     <div class="form-row"><label>Email</label><input id="login-email" type="email" placeholder="user@example.com" /></div>
     <div class="form-row"><label>OAuth Token <span style="color:var(--muted)">(optional)</span></label><input id="login-oauth" type="text" placeholder="leave blank for debug" /></div>
     <button class="btn" onclick="doLogin()">Send Request</button>
+    <a class="btn-line" onclick="doLineLogin()">
+      <svg width="22" height="22" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24 4C12.954 4 4 11.82 4 21.5c0 8.02 6.577 14.77 15.594 16.85.607.13.717.5.537 1.018l-.867 3.203c-.25.93.97 1.65 1.75.91C24.514 40.647 43 28.83 43 21.5 43 11.82 35.046 4 24 4z" fill="#fff"/>
+      </svg>
+      Continue with LINE
+    </a>
     <div class="response-box" id="res-login" style="display:none"></div>
   </div>
 
@@ -769,10 +815,68 @@
   function statusText(s) {
     return {200:"OK",201:"Created",204:"No Content",400:"Bad Request",401:"Unauthorized",403:"Forbidden",404:"Not Found",409:"Conflict",500:"Internal Server Error"}[s]??""
   }
-  function updateSessionBadge(user) {
+  function updateSessionBadge(user, source) {
     const el = document.getElementById("session-user")
-    if (user) { el.textContent=`${user.firstname} ${user.lastname} (${user.role})`; el.className="badge-user" }
-    else { el.textContent="— not logged in —"; el.className="badge-user empty" }
+    if (user) {
+      const tag = source === "cookie"
+        ? `<span class="source-tag">🍪 cookie</span>`
+        : source === "token"
+        ? `<span class="source-tag">🔑 token</span>`
+        : ""
+      el.innerHTML = `${user.firstname} ${user.lastname} (${user.role})${tag}`
+      el.className = "badge-user"
+    } else { el.textContent = "— not logged in —"; el.className = "badge-user empty" }
+  }
+
+  // ── Cookie helpers ────────────────────────────────────────────────────────
+  /** Read all non-httpOnly cookies from document.cookie */
+  function parseCookies() {
+    return Object.fromEntries(
+      document.cookie.split(";").map(p => p.trim()).filter(Boolean)
+        .map(p => { const [k,...v] = p.split("="); return [k.trim(), v.join("=")] })
+    )
+  }
+
+  /** Render the cookie list in the sidebar */
+  function refreshCookies() {
+    const cookies = parseCookies()
+    const known = ["access_token", "refresh_token"]
+    let html = ""
+
+    // Non-httpOnly cookies (actually visible to JS)
+    const visible = Object.entries(cookies).filter(([n]) => !known.includes(n))
+    for (const [name, val] of visible) {
+      html += `<div class="cookie-row"><span class="cookie-name">${name}</span><span class="cookie-val" title="${val}">${val || "—"}</span></div>`
+    }
+
+    // Known httpOnly session cookies — show presence status, not value
+    for (const name of known) {
+      const inJs = name in cookies
+      html += `
+        <div class="cookie-row">
+          <span class="cookie-name">${name}</span>
+          ${inJs
+            ? `<span class="cookie-val" title="${cookies[name]}">${cookies[name]}</span>`
+            : `<span class="cookie-httponly">httpOnly · not readable</span>`}
+        </div>`
+    }
+
+    if (!html) html = '<span style="color:var(--muted);font-size:11px">No cookies found</span>'
+    document.getElementById("cookie-list").innerHTML = html
+  }
+
+  /** Call /auth/session without a Bearer token to detect an httpOnly cookie session */
+  async function detectCookieSession() {
+    try {
+      const res = await fetch(baseUrl() + "/auth/session", {method:"GET", credentials:"include"})
+      const text = await res.text()
+      let data = null; try { data = JSON.parse(text) } catch { data = text || null }
+      if (res.status === 200 && data?.user) {
+        updateSessionBadge(data.user, "cookie")
+        return true
+      }
+    } catch {}
+    return false
   }
 
   // ── API helper ────────────────────────────────────────────────────────────
@@ -780,7 +884,8 @@
     const headers = {"Content-Type":"application/json"}
     if (token) headers["Authorization"] = "Bearer "+token
     if (extra) Object.assign(headers, extra)
-    const res = await fetch(baseUrl()+path, {method, headers, body: body?JSON.stringify(body):undefined})
+    // credentials:"include" ensures httpOnly cookies are sent on every request
+    const res = await fetch(baseUrl()+path, {method, headers, credentials:"include", body: body?JSON.stringify(body):undefined})
     let data = null; const text = await res.text()
     try { data = JSON.parse(text) } catch { data = text||null }
     return {status:res.status, data}
@@ -801,8 +906,14 @@
       }
       saveTokens(data.accessToken, data.refreshToken)
       const s = await api("GET", "/auth/session", null, data.accessToken)
-      if (s.status===200 && s.data?.user) updateSessionBadge(s.data.user)
+      if (s.status===200 && s.data?.user) updateSessionBadge(s.data.user, "token")
     }
+  }
+
+  async function doLineLogin() {
+    const redirecUrl = new URL(window.location.pathname, window.location.origin)
+    const url = `http://localhost:3000/auth/oauth?provider=line&redirect_url=${redirecUrl}`
+    window.location.href = url
   }
   async function doRegister() {
     const body = {email:document.getElementById("reg-email").value.trim(), firstname:document.getElementById("reg-firstname").value.trim(), lastname:document.getElementById("reg-lastname").value.trim(), role:document.getElementById("reg-role").value}
@@ -833,7 +944,7 @@
     const token = document.getElementById("session-token").value.trim()||accessToken
     const {status, data} = await api("GET", "/auth/session", null, token)
     renderResponse("res-session", status, data)
-    if (status===200 && data?.user) updateSessionBadge(data.user)
+    if (status===200 && data?.user) updateSessionBadge(data.user, "token")
   }
 
   // ═══════════════════════════════ USERS ═══════════════════════════════════
@@ -1029,10 +1140,16 @@
   // ── Init ──────────────────────────────────────────────────────────────────
   loadCtxInputs()
   syncInputs()
+  refreshCookies()
+
   if (accessToken) {
+    // Token in localStorage — verify it and show badge
     api("GET","/auth/session",null,accessToken).then(({status,data}) => {
-      if (status===200 && data?.user) updateSessionBadge(data.user)
+      if (status===200 && data?.user) updateSessionBadge(data.user, "token")
     })
+  } else {
+    // No token — check for httpOnly cookie session (e.g. after LINE OAuth redirect)
+    detectCookieSession()
   }
 </script>
 </body>
