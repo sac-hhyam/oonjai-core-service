@@ -1,7 +1,7 @@
 import {type Endpoint, unauthorized, badRequest, ok} from "@http/HttpContext"
-import type {CaretakerService} from "@serv/CaretakerService"
+import type {UserService} from "@serv/UserService"
 
-export const getAvailableCaretakers: Endpoint<[CaretakerService]> = {
+export const getAvailableCaretakers: Endpoint<[UserService]> = {
 method: "GET",
 path: "/caretakers",
 handler: async (ctx, [service], session) => {

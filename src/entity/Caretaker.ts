@@ -1,71 +1,54 @@
-import type {UUID} from "@type/uuid"
-import type {CaretakerDTO} from "@entity/CaretakerDTO"
+import type {CareTakerUserAttributes, UserDTO} from "@entity/UserDTO"
 
 export class Caretaker {
-private id: UUID | undefined
-private userId: UUID
-private bio: string
-private specialization: string
-private hourlyRate: number
-private currency: string
-private experience: number
-private rating: number
-private reviewCount: number
-private isVerified: boolean
-private isAvailable: boolean
-private contactInfo: string
-private permission: string
+  private bio: string
+  private specialization: string
+  private hourlyRate: number
+  private currency: string
+  private experience: number
+  private rating: number
+  private reviewCount: number
+  private isVerified: boolean
+  private isAvailable: boolean
+  private contactInfo: string
+  private permission: string
 
-constructor(caretakerDTOLike: CaretakerDTO)
-  constructor(userId: UUID, bio: string, specialization: string, hourlyRate: number, currency: string, experience: number, rating: number, reviewCount: number, isVerified: boolean, isAvailable: boolean, contactInfo: string, permission: string, id?: UUID)
+  constructor(caretakerAttr: CareTakerUserAttributes)
+  constructor(bio: string, specialization: string, hourlyRate: number, currency: string, experience: number, rating: number, reviewCount: number, isVerified: boolean, isAvailable: boolean, contactInfo: string, permission: string)
 
-  constructor(...args: [CaretakerDTO] | [UUID, string, string, number, string, number, number, number, boolean, boolean, string, string, UUID?]) {
-    if (typeof args[0] === "object" && "userId" in args[0]) {
-      const dto = args[0] as CaretakerDTO
-      this.id = dto.id
-      this.userId = dto.userId
-      this.bio = dto.bio
-      this.specialization = dto.specialization
-      this.hourlyRate = dto.hourlyRate
-      this.currency = dto.currency
-      this.experience = dto.experience
-      this.rating = dto.rating
-      this.reviewCount = dto.reviewCount
-      this.isVerified = dto.isVerified
-      this.isAvailable = dto.isAvailable
-      this.contactInfo = dto.contactInfo
-      this.permission = dto.permission
+  constructor(...args: [CareTakerUserAttributes] | [string, string, number, string, number, number, number, boolean, boolean, string, string]) {
+    if (typeof args[0] === "object" && "email" in args[0]) {
+      const attr = args[0] as CareTakerUserAttributes
+      this.bio = attr.bio
+      this.specialization = attr.specialization
+      this.hourlyRate = attr.hourlyRate
+      this.currency = attr.currency
+      this.experience = attr.experience
+      this.rating = attr.rating
+      this.reviewCount = attr.reviewCount
+      this.isVerified = attr.isVerified
+      this.isAvailable = attr.isAvailable
+      this.contactInfo = attr.contactInfo
+      this.permission = attr.permission
       return
     }
 
-    const arr = args as [UUID, string, string, number, string, number, number, number, boolean, boolean, string, string, UUID?]
-    this.userId = arr[0]
-    this.bio = arr[1]
-    this.specialization = arr[2]
-    this.hourlyRate = arr[3]
-    this.currency = arr[4]
-    this.experience = arr[5]
-    this.rating = arr[6]
-    this.reviewCount = arr[7]
-    this.isVerified = arr[8]
-    this.isAvailable = arr[9]
-    this.contactInfo = arr[10]
-    this.permission = arr[11]
-    this.id = arr[12]
+    const arr = args as [string, string, number, string, number, number, number, boolean, boolean, string, string]
+    this.bio = arr[0]
+    this.specialization = arr[1]
+    this.hourlyRate = arr[2]
+    this.currency = arr[3]
+    this.experience = arr[4]
+    this.rating = arr[5]
+    this.reviewCount = arr[6]
+    this.isVerified = arr[7]
+    this.isAvailable = arr[8]
+    this.contactInfo = arr[9]
+    this.permission = arr[10]
   }
 
-  public isNew(): boolean {
-    return !this.id
-  }
-
-  public getId(): UUID | undefined {
-    return this.id
-  }
-
-  public toDTO(): CaretakerDTO {
+  public toDTO(): CareTakerUserAttributes {
     return {
-      id: this.id,
-      userId: this.userId,
       bio: this.bio,
       specialization: this.specialization,
       hourlyRate: this.hourlyRate,
@@ -80,7 +63,8 @@ constructor(caretakerDTOLike: CaretakerDTO)
     }
   }
 
-  public setProfile(data: Partial<CaretakerDTO>) {
+
+  public setProfile(data: Partial<CareTakerUserAttributes>) {
     if (data.bio !== undefined) this.bio = data.bio
     if (data.specialization !== undefined) this.specialization = data.specialization
     if (data.hourlyRate !== undefined) this.hourlyRate = data.hourlyRate

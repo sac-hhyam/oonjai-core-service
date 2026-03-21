@@ -12,6 +12,11 @@ handler: async (ctx, [service], session) => {
       return unauthorized("User must be logged in")
     }
 
+
+    // TODO
+    // A only caretaker can create status log
+    // Checking if the booking is related to the caretaker or not
+
     const body = ctx.body as Record<string, unknown>
     if (!body?.statusType || !body?.notes) {
       return badRequest("statusType and notes are required")

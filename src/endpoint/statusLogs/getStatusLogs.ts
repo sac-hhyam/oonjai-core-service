@@ -10,6 +10,9 @@ handler: async (ctx, [service], session) => {
       return unauthorized("User must be logged in")
     }
 
+    // TODO
+    // Check if booking is related to the user or not
+
     const bookingId = ctx.params?.bookingId as string
     const logs = service.getStatusLogsForBooking(bookingId)
     return ok(logs.map(log => log.toDTO()))

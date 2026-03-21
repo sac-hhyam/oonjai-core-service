@@ -18,9 +18,6 @@ import {logout} from "@endpoint/auth/logout"
 import {refreshToken} from "@endpoint/auth/refreshToken"
 import {getCurrentSession} from "@endpoint/auth/getCurrentSession"
 import {me} from "@endpoint/users/me"
-
-import {TestCaretakerRepository} from "@repo/TestCaretakerRepository"
-import {CaretakerService} from "@serv/CaretakerService"
 import {getAvailableCaretakers} from "@endpoint/caretakers/getAvailableCaretakers"
 import {getCaretakerById} from "@endpoint/caretakers/getCaretakerById"
 import {updateCaretakerProfile} from "@endpoint/caretakers/updateCaretakerProfile"
@@ -34,7 +31,6 @@ import {createStatusLog} from "@endpoint/statusLogs/createStatusLog"
 const db = new TestFSDatabase()
 const userRepo = new TestUserRepository(db)
 const seniorRepo = new TestSeniorRepository(db)
-const caretakerRepo = new TestCaretakerRepository(db)
 const statusLogRepo = new TestStatusLogRepository(db) // ← new repository for status logs
 const statusLogService = new StatusLogService(statusLogRepo)  // ← removed bookingRepo dependency from StatusLogService constructor
 
@@ -43,7 +39,6 @@ const jwtSessionService = new JWTSessionService(userRepo, process.env["JWT_SECRE
 const userService = new UserService(userRepo)
 const seniorManagementService = new SeniorManagementService(userRepo, seniorRepo)
 const authService = new AuthService(userService, jwtSessionService)
-const caretakerService = new CaretakerService(caretakerRepo)
 
 // ── HTTP ──────────────────────────────────────────────────────────────────────
 const router = new Router(jwtSessionService)
@@ -59,13 +54,13 @@ registry
   // Users
   .register(updateUser, [userService])
   .register(me, [userService])
+  // Caretakers
+  .register(getAvailableCaretakers, [userService])
+  .register(getCaretakerById, [userService])
+  .register(updateCaretakerProfile, [userService])
   // Seniors
   .register(addSenior, [seniorManagementService])
   .register(getAllSeniors, [seniorManagementService])
-  // Caretakers
-  .register(getAvailableCaretakers, [caretakerService])
-  .register(getCaretakerById, [caretakerService])
-  .register(updateCaretakerProfile, [caretakerService])
   // Status Logs — wired after BE-BOOKING-TASK is merged
 
 serveBun(router, {port: 3000})
