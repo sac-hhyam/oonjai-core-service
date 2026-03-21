@@ -1,11 +1,16 @@
 import type {CookieOptions} from "@http/HttpContext"
 import type {Router} from "@http/Router"
+import {join} from "path"
 
 export interface BunAdapterOptions {
   port?: number
   hostname?: string
   /** Allowed CORS origins. Defaults to "*" for local development. */
   allowedOrigins?: string[]
+  /** Path to an HTML file served at GET /debug when DEBUG env is set. Defaults to ./debug/index.html */
+  debugHtml?: string
+  /** Port for the debug UI server. Defaults to main port + 1. Only used when DEBUG env is set. */
+  debugPort?: number
 }
 
 const CORS_HEADERS = (origin: string, allowed: string[]): Record<string, string> => {
@@ -43,7 +48,9 @@ function serializeCookie(opt: CookieOptions): string {
 }
 
 export function serveBun(router: Router, options: BunAdapterOptions = {}): void {
-  const {port = 3000, hostname = "0.0.0.0", allowedOrigins = ["*"]} = options
+  const {port = 3000, hostname = "0.0.0.0", allowedOrigins = ["*"], debugHtml = "./debug/index.html", debugPort} = options
+  const debugEnabled = Boolean(process.env["DEBUG"])
+  const resolvedDebugPort = debugPort ?? port + 1
 
   Bun.serve({
     port,
@@ -106,5 +113,26 @@ export function serveBun(router: Router, options: BunAdapterOptions = {}): void 
     },
   })
 
-  console.log(`Server running on http://${hostname}:${port}`)
+  const baseUrl = `http://localhost:${port}`
+  console.log(`Server running on ${baseUrl}`)
+
+  if (debugEnabled) {
+    Bun.serve({
+      port: resolvedDebugPort,
+      hostname,
+      async fetch(req: Request): Promise<Response> {
+        const url = new URL(req.url)
+        if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/debug")) {
+          const file = Bun.file(join(process.cwd(), debugHtml))
+          const html = await file.text()
+          return new Response(html, {status: 200, headers: {"Content-Type": "text/html"}})
+        }
+        return new Response(null, {status: 404})
+      },
+    })
+
+    const debugUrl = `http://localhost:${resolvedDebugPort}`
+    console.log(`Debug UI available at ${debugUrl}`)
+    Bun.spawn(["open", debugUrl])
+  }
 }

@@ -64,6 +64,8 @@ export class LineAuthService implements IService {
       scope: "profile openid",
     })
 
+    console.log(params)
+
     return `${LineAuthService.AUTH_URL}?${params.toString()}`
   }
 

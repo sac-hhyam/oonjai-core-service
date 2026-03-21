@@ -34,8 +34,7 @@ const seniorManagementService = new SeniorManagementService(userRepo, seniorRepo
 const authService = new AuthService(userService, jwtSessionService)
 const lineAuthService = new LineAuthService(
   process.env["LINE_CHANNEL_ID"] ?? "",
-  process.env["LINE_CHANNEL_SECRET"] ?? "",
-  process.env["LINE_REDIRECT_URI"] ?? "http://localhost:3000/auth/line/callback"
+  process.env["LINE_CHANNEL_SECRET"] ?? ""
 )
 
 // ── HTTP ──────────────────────────────────────────────────────────────────────

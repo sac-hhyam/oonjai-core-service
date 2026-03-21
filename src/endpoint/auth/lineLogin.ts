@@ -14,7 +14,7 @@ function getAllowedRedirectUrls(): string[] {
 
 export const lineLogin: Endpoint<[LineAuthService]> = {
   method: "GET",
-  path: "/auth/login",
+  path: "/auth/oauth",
   handler: async (ctx, [lineService], _session) => {
     const {provider, redirect_url} = ctx.query
 
@@ -30,7 +30,11 @@ export const lineLogin: Endpoint<[LineAuthService]> = {
     let validatedRedirectUrl: string | undefined
     if (redirect_url) {
       const allowed = getAllowedRedirectUrls()
-      if (allowed.length > 0 && !allowed.includes(redirect_url)) {
+      if (allowed.length > 0 && !allowed.some((a) => {
+        const aURL = new URL(a)
+        const tURL = new URL(redirect_url)
+        return aURL.origin === tURL.origin && aURL.protocol ===  tURL.protocol
+      })) {
         return badRequest("redirect_url is not in the allowed list")
       }
       validatedRedirectUrl = redirect_url

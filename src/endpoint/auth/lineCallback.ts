@@ -48,6 +48,7 @@ export const lineCallback: Endpoint<[LineAuthService, AuthService]> = {
 
       // Redirect to the URL requested by the client, or fall back to FRONTEND_URL env var
       const destination = stateResult.redirectUrl ?? process.env["FRONTEND_URL"] ?? "http://localhost:3000"
+      console.log(destination)
       return withCookies(
         sessionCookies(sessionToken.accessToken, sessionToken.refreshToken),
         redirectTo(destination)
