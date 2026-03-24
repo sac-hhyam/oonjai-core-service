@@ -18,11 +18,21 @@ import {logout} from "@endpoint/auth/logout"
 import {refreshToken} from "@endpoint/auth/refreshToken"
 import {getCurrentSession} from "@endpoint/auth/getCurrentSession"
 import {me} from "@endpoint/users/me"
+import {getAvailableCaretakers} from "@endpoint/caretakers/getAvailableCaretakers"
+import {getCaretakerById} from "@endpoint/caretakers/getCaretakerById"
+import {updateCaretakerProfile} from "@endpoint/caretakers/updateCaretakerProfile"
+
+import {TestStatusLogRepository} from "@repo/TestStatusLogRepository"
+import {StatusLogService} from "@serv/StatusLogService"
+import {getStatusLogs} from "@endpoint/statusLogs/getStatusLogs"
+import {createStatusLog} from "@endpoint/statusLogs/createStatusLog"
 
 // ── Infrastructure ────────────────────────────────────────────────────────────
 const db = new TestFSDatabase()
 const userRepo = new TestUserRepository(db)
 const seniorRepo = new TestSeniorRepository(db)
+const statusLogRepo = new TestStatusLogRepository(db) // ← new repository for status logs
+const statusLogService = new StatusLogService(statusLogRepo)  // ← removed bookingRepo dependency from StatusLogService constructor
 
 // ── Services ──────────────────────────────────────────────────────────────────
 const jwtSessionService = new JWTSessionService(userRepo, process.env["JWT_SECRET"] ?? "change-me-in-production")
@@ -31,22 +41,26 @@ const seniorManagementService = new SeniorManagementService(userRepo, seniorRepo
 const authService = new AuthService(userService, jwtSessionService)
 
 // ── HTTP ──────────────────────────────────────────────────────────────────────
-// jwtSessionService is passed to Router — it resolves the bearer token into a
-// Session entity before every handler call, no extra wiring needed per endpoint
 const router = new Router(jwtSessionService)
 const registry = new EndpointRegistry(router)
 
 registry
-  // Auth
-  .register(login, [authService])
+// Auth
+.register(login, [authService])
   .register(register, [authService])
   .register(logout, [authService])
   .register(refreshToken, [jwtSessionService])
-  .register(getCurrentSession, [])   // no service — session entity comes from Router
+  .register(getCurrentSession, [])
   // Users
-  .register(updateUser, [userService]).register(me, [userService])
+  .register(updateUser, [userService])
+  .register(me, [userService])
+  // Caretakers
+  .register(getAvailableCaretakers, [userService])
+  .register(getCaretakerById, [userService])
+  .register(updateCaretakerProfile, [userService])
   // Seniors
   .register(addSenior, [seniorManagementService])
   .register(getAllSeniors, [seniorManagementService])
+  // Status Logs — wired after BE-BOOKING-TASK is merged
 
 serveBun(router, {port: 3000})
