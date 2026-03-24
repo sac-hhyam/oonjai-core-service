@@ -7,7 +7,12 @@ import type {CareTakerUserAttributes} from "@entity/UserDTO"
 export const register: Endpoint<[AuthService]> = {
   method: "POST",
   path: "/auth/register",
-  handler: async (ctx, [service], _session) => {
+  handler: async (ctx, [service], session) => {
+
+    if (session) {
+      return badRequest("session already exists")
+    }
+
     const body = ctx.body as Record<string, unknown>
 
     if (!body?.email || !body?.firstname || !body?.lastname || !body?.role) {

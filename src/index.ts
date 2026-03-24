@@ -4,6 +4,7 @@ import {UserService} from "@serv/UserService"
 import {SeniorManagementService} from "@serv/SeniorManagementService"
 import {AuthService} from "@serv/AuthService"
 import {JWTSessionService} from "@serv/JWTSessionService"
+import {LineAuthService} from "@serv/LineAuthService"
 import {Router} from "@http/Router"
 import {EndpointRegistry} from "@http/EndpointRegistry"
 import {serveBun} from "@http/BunAdapter"
@@ -17,6 +18,8 @@ import {register} from "@endpoint/auth/register"
 import {logout} from "@endpoint/auth/logout"
 import {refreshToken} from "@endpoint/auth/refreshToken"
 import {getCurrentSession} from "@endpoint/auth/getCurrentSession"
+import {lineLogin} from "@endpoint/auth/lineLogin"
+import {lineCallback} from "@endpoint/auth/lineCallback"
 import {me} from "@endpoint/users/me"
 import {getAvailableCaretakers} from "@endpoint/caretakers/getAvailableCaretakers"
 import {getCaretakerById} from "@endpoint/caretakers/getCaretakerById"
@@ -39,6 +42,10 @@ const jwtSessionService = new JWTSessionService(userRepo, process.env["JWT_SECRE
 const userService = new UserService(userRepo)
 const seniorManagementService = new SeniorManagementService(userRepo, seniorRepo)
 const authService = new AuthService(userService, jwtSessionService)
+const lineAuthService = new LineAuthService(
+  process.env["LINE_CHANNEL_ID"] ?? "",
+  process.env["LINE_CHANNEL_SECRET"] ?? ""
+)
 
 // ── HTTP ──────────────────────────────────────────────────────────────────────
 const router = new Router(jwtSessionService)
@@ -50,6 +57,10 @@ registry
   .register(register, [authService])
   .register(logout, [authService])
   .register(refreshToken, [jwtSessionService])
+  .register(getCurrentSession, [])   // no service — session entity comes from Router
+  // LINE OAuth
+  .register(lineLogin, [lineAuthService])
+  .register(lineCallback, [lineAuthService, authService])
   .register(getCurrentSession, [])
   // Users
   .register(updateUser, [userService])
