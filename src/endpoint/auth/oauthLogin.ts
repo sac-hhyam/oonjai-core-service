@@ -1,8 +1,7 @@
 import type {Endpoint} from "@http/HttpContext"
 import {badRequest, redirectTo} from "@http/HttpContext"
-import type {LineAuthService} from "@serv/LineAuthService"
+import type {OAuthRegistry} from "@serv/oauth/OAuthRegistry"
 
-const SUPPORTED_PROVIDERS = ["line"] as const
 
 /** Parse and validate the ALLOWED_REDIRECT_URLS env var (comma-separated URLs). */
 function getAllowedRedirectUrls(): string[] {
@@ -12,18 +11,18 @@ function getAllowedRedirectUrls(): string[] {
     .filter(Boolean)
 }
 
-export const lineLogin: Endpoint<[LineAuthService]> = {
+export const oauthLogin: Endpoint<[OAuthRegistry]> = {
   method: "GET",
   path: "/auth/oauth",
-  handler: async (ctx, [lineService], _session) => {
+  handler: async (ctx, [reg], _session) => {
     const {provider, redirect_url} = ctx.query
 
     // ── Validate provider ────────────────────────────────────────────────────
     if (!provider) {
       return badRequest("provider query param is required")
     }
-    if (!(SUPPORTED_PROVIDERS as readonly string[]).includes(provider)) {
-      return badRequest(`unsupported provider "${provider}". Supported: ${SUPPORTED_PROVIDERS.join(", ")}`)
+    if (!reg.isProviderSupported(provider)) {
+      return badRequest(`unsupported provider "${provider}". Supported: ${reg.getSupportedProviders()}`)
     }
 
     // ── Validate redirect_url against allowlist ──────────────────────────────
@@ -40,7 +39,12 @@ export const lineLogin: Endpoint<[LineAuthService]> = {
       validatedRedirectUrl = redirect_url
     }
 
-    const authUrl = lineService.buildAuthUrl(validatedRedirectUrl)
+    const serv = await reg.getServiceFromProvider(provider)
+    if (!serv) {
+      return badRequest(`unsupported provider "${provider}". Supported: ${reg.getSupportedProviders()}`)
+    }
+
+    const authUrl = await serv.buildAuthUrl(validatedRedirectUrl)
     return redirectTo(authUrl)
   },
 }

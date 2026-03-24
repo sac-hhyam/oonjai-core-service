@@ -12,6 +12,25 @@
       --accent-hover: #818cf8; --green: #22c55e; --red: #ef4444;
       --yellow: #f59e0b; --orange: #f97316;
     }
+    .btn-google {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.875rem 1.5rem;
+      background: #d8dee1;
+      color: #000;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .btn-google:hover { background: #d8dee1; }
+
     .btn-line {
       display: flex;
       align-items: center;
@@ -315,6 +334,9 @@
         <path d="M24 4C12.954 4 4 11.82 4 21.5c0 8.02 6.577 14.77 15.594 16.85.607.13.717.5.537 1.018l-.867 3.203c-.25.93.97 1.65 1.75.91C24.514 40.647 43 28.83 43 21.5 43 11.82 35.046 4 24 4z" fill="#fff"/>
       </svg>
       Continue with LINE
+    </a>
+    <a class="btn-google" onclick="doGoogleLogin()">
+      Continue with Google
     </a>
     <div class="response-box" id="res-login" style="display:none"></div>
   </div>
@@ -915,6 +937,13 @@
     const url = `http://localhost:3000/auth/oauth?provider=line&redirect_url=${redirecUrl}`
     window.location.href = url
   }
+
+  async function doGoogleLogin() {
+    const redirecUrl = new URL(window.location.pathname, window.location.origin)
+    const url = `http://localhost:3000/auth/oauth?provider=google&redirect_url=${redirecUrl}`
+    window.location.href = url
+  }
+
   async function doRegister() {
     const body = {email:document.getElementById("reg-email").value.trim(), firstname:document.getElementById("reg-firstname").value.trim(), lastname:document.getElementById("reg-lastname").value.trim(), role:document.getElementById("reg-role").value}
     const oauth = document.getElementById("reg-oauth").value.trim()

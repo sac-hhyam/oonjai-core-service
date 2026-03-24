@@ -43,8 +43,12 @@ export class TestUserRepository implements IUserRepository {
   }
 
   findById(id: UUID): User | undefined {
-    const record = this.db.get("user", id.toString())
-    return this.reconstruct(record, id)
+    try {
+      const record = this.db.get("user", id.toString())
+      return this.reconstruct(record, id)
+    }catch (e) {
+      return undefined
+    }
   }
 
   findByEmail(email: string): User | undefined {

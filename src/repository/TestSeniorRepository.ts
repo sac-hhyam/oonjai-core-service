@@ -20,7 +20,7 @@ export class TestSeniorRepository implements ISeniorRepository {
 
   public findAllByAdultChildId(adultChildId: UUID): Senior[] {
     return this.db.getAll("senior")
-      .filter(dto => dto.adultChildId.toString() === adultChildId.toString())
+      .filter(dto => (dto.adultChildId === adultChildId.toString()))
       .map(dto => new Senior(dto))
   }
 

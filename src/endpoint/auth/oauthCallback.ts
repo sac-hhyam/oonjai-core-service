@@ -1,12 +1,12 @@
 import {type Endpoint, internalError, redirectTo, sessionCookies, withCookies} from "@http/HttpContext"
-import type {LineAuthService} from "@serv/LineAuthService"
 import type {AuthService} from "@serv/AuthService"
 import {RoleEnum} from "@type/user"
+import type {OAuthRegistry} from "@serv/oauth/OAuthRegistry"
 
-export const lineCallback: Endpoint<[LineAuthService, AuthService]> = {
+export const oauthCallback: Endpoint<[OAuthRegistry, AuthService]> = {
   method: "GET",
-  path: "/auth/line/callback",
-  handler: async (ctx, [lineService, authService], _session) => {
+  path: "/auth/oauth/callback",
+  handler: async (ctx, [reg, authService], _session) => {
     const {code, state, error} = ctx.query
 
     if (error) {
@@ -18,42 +18,43 @@ export const lineCallback: Endpoint<[LineAuthService, AuthService]> = {
     }
 
     // Validate state and recover the redirect_url the client originally supplied
-    const stateResult = lineService.validateState(state)
-    if (!stateResult.valid) {
+    const result = await reg.getServiceFromState(state)
+    if (!result) {
       return internalError("invalid_state")
     }
 
+    const [validation, serv] = result
+
     try {
-      const lineToken = await lineService.exchangeCodeForToken(code)
-      const profile = await lineService.getUserProfile(lineToken.access_token)
+      const token = await serv.exchangeCodeForToken(code)
+      const profile = await serv.getUserProfile(token)
 
       // Synthesize a local email from the LINE userId (LINE does not expose email by default)
-      const lineEmail = `${profile.userId}@line.local`
+      let email = profile.email
 
       // Find existing user or create a new one on first login
       let sessionToken
       try {
-        sessionToken = await authService.login(lineEmail)
+        sessionToken = await authService.login(email)
       } catch {
-        const [firstname, ...rest] = profile.displayName.split(" ")
         await authService.register(
-          lineEmail,
-          lineToken.access_token,
-          firstname ?? profile.displayName,
-          rest.join(" ") || "LINE",
+          email,
+          token.access_token,
+          profile.firstname,
+          profile.lastname,
           RoleEnum.ADULTCHILD
         )
-        sessionToken = await authService.login(lineEmail)
+        sessionToken = await authService.login(email)
       }
 
       // Redirect to the URL requested by the client, or fall back to FRONTEND_URL env var
-      const destination = stateResult.redirectUrl ?? process.env["FRONTEND_URL"] ?? "http://localhost:3000"
-      console.log(destination)
+      const destination = validation.redirectUrl ?? process.env["FRONTEND_URL"] ?? "http://localhost:3000"
+
       return withCookies(
         sessionCookies(sessionToken.accessToken, sessionToken.refreshToken),
         redirectTo(destination)
       )
-    } catch {
+    } catch(e) {
       return internalError("auth error")
     }
   },
