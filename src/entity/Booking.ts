@@ -2,7 +2,7 @@ import {UUID} from "@type/uuid"
 import type {Timestamp} from "@type/timestamp"
 import type {BookingDTO} from "@entity/BookingDTO"
 import {BookingStatus, ServiceType} from "@type/booking"
-import type {Review} from "@type/review"
+import {Review} from "@entity/Review"
 
 export class Booking {
   private id?: UUID
@@ -57,7 +57,7 @@ export class Booking {
       this.note = dto.note
       this.estimatedCost = dto.estimatedCost
       this.currency = dto.currency
-      this.review = dto.review
+      this.review = dto.review ? new Review(dto.review) : null
       this.createdAt = dto.createdAt
       return
     }
@@ -136,7 +136,12 @@ export class Booking {
     if (this.review !== null) {
       throw new Error("CONFLICT: a review has already been submitted for this booking")
     }
-    const review: Review = {rating, comment, reviewType, createdAt: Date.now()}
+
+    if (this.status !== "completed") {
+      throw new Error("Only completed review is applicable")
+    }
+
+    const review = new Review(rating, comment, reviewType, Date.now())
     this.review = review
     return review
   }
@@ -165,7 +170,7 @@ export class Booking {
       note: this.note,
       estimatedCost: this.estimatedCost,
       currency: this.currency,
-      review: this.review,
+      review: this.review?.toDTO() ?? null,
       createdAt: this.createdAt,
     }
   }

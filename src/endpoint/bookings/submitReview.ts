@@ -32,7 +32,7 @@ export const submitReview: Endpoint<[BookingService]> = {
         body.comment as string,
         body.reviewType as string
       )
-      return created(review)
+      return created(review.toDTO())
     } catch (err: unknown) {
       const message = (err as Error).message
       if (message.startsWith("NOT_FOUND")) return notFound("booking not found")

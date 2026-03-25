@@ -1,7 +1,6 @@
-import type {UUID} from "@type/uuid"
 import type {Timestamp} from "@type/timestamp"
 import type {BookingStatus, ServiceType} from "@type/booking"
-import type {Review} from "@type/review"
+import type {ReviewDTO} from "@entity/ReviewDTO"
 
 export interface BookingDTO {
   id: string | undefined
@@ -16,6 +15,6 @@ export interface BookingDTO {
   note: string
   estimatedCost: number
   currency: string
-  review: Review | null
+  review: ReviewDTO | null
   createdAt: Timestamp
 }

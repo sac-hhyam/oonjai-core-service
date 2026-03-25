@@ -1,6 +1,2 @@
-export interface Review {
-  rating: number
-  comment: string
-  reviewType: string
-  createdAt: number
-}
+// Review is now a domain entity — see src/entity/Review.ts and src/entity/ReviewDTO.ts
+export {}

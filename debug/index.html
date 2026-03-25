@@ -239,7 +239,7 @@
   <div class="nav-group">
     <div class="section-toggle open" onclick="toggleSection(this,'ng-users')"><span class="nav-label" style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Users</span><span class="chev">▶</span></div>
     <div class="section-body open" id="ng-users">
-      <button class="nav-btn" onclick="show('getMe',event)"><span class="method-badge GET">GET</span>Get Me<span class="impl-dot no"></span></button>
+      <button class="nav-btn" onclick="show('getMe',event)"><span class="method-badge GET">GET</span>Get Me<span class="impl-dot yes"></span></button>
       <button class="nav-btn" onclick="show('updateUser',event)"><span class="method-badge PUT">PUT</span>Update User<span class="impl-dot yes"></span></button>
     </div>
   </div>
@@ -259,9 +259,9 @@
   <div class="nav-group">
     <div class="section-toggle" onclick="toggleSection(this,'ng-caretakers')"><span class="nav-label" style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Caretakers</span><span class="chev">▶</span></div>
     <div class="section-body" id="ng-caretakers">
-      <button class="nav-btn" onclick="show('getCaretakers',event)"><span class="method-badge GET">GET</span>List Caretakers<span class="impl-dot no"></span></button>
-      <button class="nav-btn" onclick="show('getCaretakerById',event)"><span class="method-badge GET">GET</span>Get Caretaker<span class="impl-dot no"></span></button>
-      <button class="nav-btn" onclick="show('updateCaretakerProfile',event)"><span class="method-badge PUT">PUT</span>Update Profile<span class="impl-dot no"></span></button>
+      <button class="nav-btn" onclick="show('getCaretakers',event)"><span class="method-badge GET">GET</span>List Caretakers<span class="impl-dot yes"></span></button>
+      <button class="nav-btn" onclick="show('getCaretakerById',event)"><span class="method-badge GET">GET</span>Get Caretaker<span class="impl-dot yes"></span></button>
+      <button class="nav-btn" onclick="show('updateCaretakerProfile',event)"><span class="method-badge PUT">PUT</span>Update Profile<span class="impl-dot yes"></span></button>
     </div>
   </div>
 
@@ -269,14 +269,14 @@
   <div class="nav-group">
     <div class="section-toggle" onclick="toggleSection(this,'ng-bookings')"><span class="nav-label" style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Bookings</span><span class="chev">▶</span></div>
     <div class="section-body" id="ng-bookings">
-      <button class="nav-btn" onclick="show('getBookings',event)"><span class="method-badge GET">GET</span>List Bookings<span class="impl-dot no"></span></button>
-      <button class="nav-btn" onclick="show('createBooking',event)"><span class="method-badge POST">POST</span>Create Booking<span class="impl-dot no"></span></button>
-      <button class="nav-btn" onclick="show('getBookingById',event)"><span class="method-badge GET">GET</span>Get Booking<span class="impl-dot no"></span></button>
-      <button class="nav-btn" onclick="show('updateBooking',event)"><span class="method-badge PUT">PUT</span>Update Booking<span class="impl-dot no"></span></button>
-      <button class="nav-btn" onclick="show('cancelBooking',event)"><span class="method-badge DELETE">DEL</span>Cancel Booking<span class="impl-dot no"></span></button>
-      <button class="nav-btn" onclick="show('confirmBooking',event)"><span class="method-badge POST">POST</span>Confirm Booking<span class="impl-dot no"></span></button>
-      <button class="nav-btn" onclick="show('endSession',event)"><span class="method-badge POST">POST</span>End Session<span class="impl-dot no"></span></button>
-      <button class="nav-btn" onclick="show('submitReview',event)"><span class="method-badge POST">POST</span>Submit Review<span class="impl-dot no"></span></button>
+      <button class="nav-btn" onclick="show('getBookings',event)"><span class="method-badge GET">GET</span>List Bookings<span class="impl-dot yes"></span></button>
+      <button class="nav-btn" onclick="show('createBooking',event)"><span class="method-badge POST">POST</span>Create Booking<span class="impl-dot yes"></span></button>
+      <button class="nav-btn" onclick="show('getBookingById',event)"><span class="method-badge GET">GET</span>Get Booking<span class="impl-dot yes"></span></button>
+      <button class="nav-btn" onclick="show('updateBooking',event)"><span class="method-badge PUT">PUT</span>Update Booking<span class="impl-dot yes"></span></button>
+      <button class="nav-btn" onclick="show('cancelBooking',event)"><span class="method-badge DELETE">DEL</span>Cancel Booking<span class="impl-dot yes"></span></button>
+      <button class="nav-btn" onclick="show('confirmBooking',event)"><span class="method-badge POST">POST</span>Confirm Booking<span class="impl-dot yes"></span></button>
+      <button class="nav-btn" onclick="show('endSession',event)"><span class="method-badge POST">POST</span>End Session<span class="impl-dot yes"></span></button>
+      <button class="nav-btn" onclick="show('submitReview',event)"><span class="method-badge POST">POST</span>Submit Review<span class="impl-dot yes"></span></button>
     </div>
   </div>
 
@@ -294,8 +294,8 @@
   <div class="nav-group">
     <div class="section-toggle" onclick="toggleSection(this,'ng-statuslogs')"><span class="nav-label" style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Status Logs</span><span class="chev">▶</span></div>
     <div class="section-body" id="ng-statuslogs">
-      <button class="nav-btn" onclick="show('getStatusLogs',event)"><span class="method-badge GET">GET</span>Get Logs<span class="impl-dot no"></span></button>
-      <button class="nav-btn" onclick="show('createStatusLog',event)"><span class="method-badge POST">POST</span>Create Log<span class="impl-dot no"></span></button>
+      <button class="nav-btn" onclick="show('getStatusLogs',event)"><span class="method-badge GET">GET</span>Get Logs<span class="impl-dot yes"></span></button>
+      <button class="nav-btn" onclick="show('createStatusLog',event)"><span class="method-badge POST">POST</span>Create Log<span class="impl-dot yes"></span></button>
     </div>
   </div>
 
@@ -400,7 +400,6 @@
 
   <div class="panel" id="panel-getMe">
     <div class="panel-header"><div class="panel-title">Get My Profile</div><div class="panel-path">GET /users/me</div></div>
-    <div class="not-impl-banner"><strong>🔴 Not yet implemented</strong>Create <code>src/endpoint/users/getMe.ts</code> → register in <code>index.ts</code></div>
     <button class="btn" onclick="doGetMe()">Send Request</button>
     <div class="response-box" id="res-getMe" style="display:none"></div>
   </div>
@@ -458,7 +457,6 @@
 
   <div class="panel" id="panel-getCaretakers">
     <div class="panel-header"><div class="panel-title">List Available Caretakers</div><div class="panel-path">GET /caretakers</div></div>
-    <div class="not-impl-banner"><strong>🔴 Not yet implemented</strong>Create <code>src/endpoint/caretakers/getAvailableCaretakers.ts</code> + <code>CaretakerService</code></div>
     <div class="form-row"><label>Service Type <span style="color:var(--red)">*</span></label><select id="gc-serviceType"><option value="home_care">home_care</option><option value="medical_escort">medical_escort</option><option value="outings">outings</option></select></div>
     <div class="row-2">
       <div class="form-row"><label>Start Date/Time <span style="color:var(--red)">*</span></label><input id="gc-startDate" type="datetime-local" /></div>
@@ -480,7 +478,6 @@
 
   <div class="panel" id="panel-getCaretakerById">
     <div class="panel-header"><div class="panel-title">Get Caretaker by ID</div><div class="panel-path">GET /caretakers/:caretakerId</div></div>
-    <div class="not-impl-banner"><strong>🔴 Not yet implemented</strong>Create <code>src/endpoint/caretakers/getCaretakerById.ts</code></div>
     <div class="form-row"><label>Caretaker ID</label><input id="gcb-caretakerId" type="text" placeholder="uuid" /><span class="ctx-pull" onclick="pullCtx('gcb-caretakerId','caretakerId')">↓ from context</span></div>
     <button class="btn" onclick="doGetCaretakerById()">Send Request</button>
     <div class="response-box" id="res-getCaretakerById" style="display:none"></div>
@@ -488,7 +485,6 @@
 
   <div class="panel" id="panel-updateCaretakerProfile">
     <div class="panel-header"><div class="panel-title">Update Caretaker Profile</div><div class="panel-path">PUT /caretakers/profile · role: caretaker</div></div>
-    <div class="not-impl-banner"><strong>🔴 Not yet implemented</strong>Create <code>src/endpoint/caretakers/updateCaretakerProfile.ts</code></div>
     <div class="form-row"><label>Bio <span style="color:var(--muted)">(optional)</span></label><textarea id="ucp-bio" placeholder="Updated bio..."></textarea></div>
     <div class="row-2">
       <div class="form-row"><label>Specialization</label><input id="ucp-specialization" type="text" placeholder="Geriatric Care, Post-Surgical" /></div>
@@ -506,7 +502,6 @@
 
   <div class="panel" id="panel-getBookings">
     <div class="panel-header"><div class="panel-title">List Bookings</div><div class="panel-path">GET /bookings</div></div>
-    <div class="not-impl-banner"><strong>🔴 Not yet implemented</strong>Create <code>src/endpoint/bookings/getBookings.ts</code> + <code>BookingService</code></div>
     <div class="row-2">
       <div class="form-row"><label>Status filter <span style="color:var(--muted)">(optional)</span></label><select id="gb-status"><option value="">— all —</option><option value="created">created</option><option value="confirmed">confirmed</option><option value="completed">completed</option><option value="cancelled">cancelled</option></select></div>
       <div class="form-row"><label>Upcoming only</label><select id="gb-upcoming"><option value="">— no filter —</option><option value="true">true</option></select></div>
@@ -517,7 +512,6 @@
 
   <div class="panel" id="panel-createBooking">
     <div class="panel-header"><div class="panel-title">Create Booking</div><div class="panel-path">POST /bookings · role: adult_child</div></div>
-    <div class="not-impl-banner"><strong>🔴 Not yet implemented</strong>Create <code>src/endpoint/bookings/createBooking.ts</code></div>
     <div class="row-2">
       <div class="form-row"><label>Senior ID <span style="color:var(--red)">*</span></label><input id="cb-seniorId" type="text" placeholder="uuid" /><span class="ctx-pull" onclick="pullCtx('cb-seniorId','seniorId')">↓ from context</span></div>
       <div class="form-row"><label>Caretaker ID <span style="color:var(--red)">*</span></label><input id="cb-caretakerId" type="text" placeholder="uuid" /><span class="ctx-pull" onclick="pullCtx('cb-caretakerId','caretakerId')">↓ from context</span></div>
@@ -538,7 +532,6 @@
 
   <div class="panel" id="panel-getBookingById">
     <div class="panel-header"><div class="panel-title">Get Booking</div><div class="panel-path">GET /bookings/:bookingId</div></div>
-    <div class="not-impl-banner"><strong>🔴 Not yet implemented</strong>Create <code>src/endpoint/bookings/getBookingById.ts</code></div>
     <div class="form-row"><label>Booking ID</label><input id="gbb-bookingId" type="text" placeholder="BK-8829" /><span class="ctx-pull" onclick="pullCtx('gbb-bookingId','bookingId')">↓ from context</span></div>
     <button class="btn" onclick="doGetBookingById()">Send Request</button>
     <div class="response-box" id="res-getBookingById" style="display:none"></div>
@@ -546,7 +539,6 @@
 
   <div class="panel" id="panel-updateBooking">
     <div class="panel-header"><div class="panel-title">Update Booking</div><div class="panel-path">PUT /bookings/:bookingId · only when status=created</div></div>
-    <div class="not-impl-banner"><strong>🔴 Not yet implemented</strong>Create <code>src/endpoint/bookings/updateBooking.ts</code></div>
     <div class="form-row"><label>Booking ID</label><input id="ub-bookingId" type="text" placeholder="BK-8829" /><span class="ctx-pull" onclick="pullCtx('ub-bookingId','bookingId')">↓ from context</span></div>
     <div class="row-2">
       <div class="form-row"><label>New Start Date/Time</label><input id="ub-startDate" type="datetime-local" /></div>
@@ -560,7 +552,6 @@
 
   <div class="panel" id="panel-cancelBooking">
     <div class="panel-header"><div class="panel-title">Cancel Booking</div><div class="panel-path">DELETE /bookings/:bookingId · role: adult_child</div></div>
-    <div class="not-impl-banner"><strong>🔴 Not yet implemented</strong>Create <code>src/endpoint/bookings/cancelBooking.ts</code></div>
     <div class="form-row"><label>Booking ID</label><input id="canc-bookingId" type="text" placeholder="BK-8829" /><span class="ctx-pull" onclick="pullCtx('canc-bookingId','bookingId')">↓ from context</span></div>
     <button class="btn danger" onclick="doCancelBooking()">Send Request</button>
     <div class="response-box" id="res-cancelBooking" style="display:none"></div>
@@ -568,7 +559,6 @@
 
   <div class="panel" id="panel-confirmBooking">
     <div class="panel-header"><div class="panel-title">Confirm Booking</div><div class="panel-path">POST /bookings/:bookingId/confirm · role: caretaker</div></div>
-    <div class="not-impl-banner"><strong>🔴 Not yet implemented</strong>Create <code>src/endpoint/bookings/confirmBooking.ts</code></div>
     <div class="form-row"><label>Booking ID</label><input id="conf-bookingId" type="text" placeholder="BK-8829" /><span class="ctx-pull" onclick="pullCtx('conf-bookingId','bookingId')">↓ from context</span></div>
     <button class="btn" onclick="doConfirmBooking()">Send Request</button>
     <div class="response-box" id="res-confirmBooking" style="display:none"></div>
@@ -576,7 +566,6 @@
 
   <div class="panel" id="panel-endSession">
     <div class="panel-header"><div class="panel-title">End Session</div><div class="panel-path">POST /bookings/:bookingId/end · role: caretaker</div></div>
-    <div class="not-impl-banner"><strong>🔴 Not yet implemented</strong>Create <code>src/endpoint/bookings/endSession.ts</code></div>
     <div class="form-row"><label>Booking ID</label><input id="es-bookingId" type="text" placeholder="BK-8829" /><span class="ctx-pull" onclick="pullCtx('es-bookingId','bookingId')">↓ from context</span></div>
     <button class="btn" onclick="doEndSession()">Send Request</button>
     <div class="response-box" id="res-endSession" style="display:none"></div>
@@ -584,7 +573,6 @@
 
   <div class="panel" id="panel-submitReview">
     <div class="panel-header"><div class="panel-title">Submit Review</div><div class="panel-path">POST /bookings/:bookingId/review · role: adult_child · booking must be completed</div></div>
-    <div class="not-impl-banner"><strong>🔴 Not yet implemented</strong>Create <code>src/endpoint/bookings/submitReview.ts</code></div>
     <div class="form-row"><label>Booking ID</label><input id="sr-bookingId" type="text" placeholder="BK-8829" /><span class="ctx-pull" onclick="pullCtx('sr-bookingId','bookingId')">↓ from context</span></div>
     <div class="row-2">
       <div class="form-row"><label>Rating (1–5) <span style="color:var(--red)">*</span></label><input id="sr-rating" type="number" min="1" max="5" placeholder="5" /></div>
@@ -631,7 +619,6 @@
 
   <div class="panel" id="panel-getStatusLogs">
     <div class="panel-header"><div class="panel-title">Get Status Logs</div><div class="panel-path">GET /bookings/:bookingId/status</div></div>
-    <div class="not-impl-banner"><strong>🔴 Not yet implemented</strong>Create <code>src/endpoint/statusLogs/getStatusLogs.ts</code></div>
     <div class="form-row"><label>Booking ID</label><input id="gsl-bookingId" type="text" placeholder="BK-8829" /><span class="ctx-pull" onclick="pullCtx('gsl-bookingId','bookingId')">↓ from context</span></div>
     <button class="btn" onclick="doGetStatusLogs()">Send Request</button>
     <div class="response-box" id="res-getStatusLogs" style="display:none"></div>
@@ -639,7 +626,6 @@
 
   <div class="panel" id="panel-createStatusLog">
     <div class="panel-header"><div class="panel-title">Create Status Log</div><div class="panel-path">POST /bookings/:bookingId/status · role: caretaker</div></div>
-    <div class="not-impl-banner"><strong>🔴 Not yet implemented</strong>Create <code>src/endpoint/statusLogs/createStatusLog.ts</code></div>
     <div class="form-row"><label>Booking ID</label><input id="csl-bookingId" type="text" placeholder="BK-8829" /><span class="ctx-pull" onclick="pullCtx('csl-bookingId','bookingId')">↓ from context</span></div>
     <div class="form-row"><label>Status Type <span style="color:var(--red)">*</span></label>
       <select id="csl-statusType">
@@ -802,7 +788,7 @@
   // ── Ping ──────────────────────────────────────────────────────────────────
   async function ping() {
     const dot = document.getElementById("status-dot")
-    try { await fetch(baseUrl()+"/auth/session",{method:"GET"}); dot.className="status-dot online" }
+    try { await fetch(baseUrl()+"/auth/session",{method:"GET", credentials:"include"}); dot.className="status-dot online" }
     catch { dot.className="status-dot offline" }
   }
   setInterval(ping,5000); ping()

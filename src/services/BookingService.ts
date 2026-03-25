@@ -2,10 +2,10 @@ import type {IBookingRepository} from "@repo/IBookingRepository"
 import type {IUserRepository} from "@repo/IUserRepository"
 import type {IService} from "@serv/IService"
 import {Booking} from "@entity/Booking"
+import {Review} from "@entity/Review"
 import type {BookingDTO} from "@entity/BookingDTO"
 import {BookingStatus, ServiceType} from "@type/booking"
 import type {BookingFilter} from "@type/booking"
-import type {Review} from "@type/review"
 import {TimestampHelper} from "@type/timestamp"
 import {UUID} from "@type/uuid"
 import {RoleEnum} from "@type/user"
@@ -128,6 +128,8 @@ export class BookingService implements IService {
     const booking = this.bookingRepo.findById(bookingId)
     if (!booking) throw new Error("NOT_FOUND: booking not found")
     const review = booking.addReview(rating, comment, reviewType)
+
+    // bookingRepo.save handles persisting the review to its own collection
     this.bookingRepo.save(booking)
 
     // Recalculate caretaker's average rating
