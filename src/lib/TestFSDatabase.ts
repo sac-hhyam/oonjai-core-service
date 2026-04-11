@@ -14,14 +14,7 @@ export class TestFSDatabase implements ITestDatabase {
         return JSON.parse(r)
       }
     }
-  }
-
-  private loadCollection(name: string): Record<string, any> {
-    if (!(name in this.dataMemory)) {
-      this.dataMemory[name] = {}
-    }
-
-    return this.dataMemory[name] as Record<string, any>
+    return {}
   }
 
   private saveDbData(data: Record<string, Record<string, any>>) {
@@ -59,25 +52,28 @@ export class TestFSDatabase implements ITestDatabase {
   }
 
   public set(collection: string, id: UUID, data: any): boolean {
-    const col = this.loadCollection(collection)
+    const db = this.getDbData()
+    const col = db[collection] || {}
     delete data["id"]
     col[id.toString()] = data
-    this.dataMemory[collection] = col
-    this.fsWrite()
+    db[collection] = col
+    this.saveDbData(db)
     return true
   }
 
   public update(collection: string, id: UUID, data: Record<string, any>): boolean {
-    const col = this.loadCollection(collection)
+    const db = this.getDbData()
+    const col = db[collection] || {}
     if (id.toString() in col) {
       delete data["id"]
       const t = col[id.toString()] ?? {}
-      for (const [k,v] of Object.entries(data)){
+      for (const [k, v] of Object.entries(data)) {
         if (v === undefined) continue
         t[k] = v
       }
-      this.dataMemory[collection] = col
-      this.fsWrite()
+      col[id.toString()] = t
+      db[collection] = col
+      this.saveDbData(db)
       return true
     }
     return false
@@ -86,10 +82,22 @@ export class TestFSDatabase implements ITestDatabase {
   public getAll(collection: string): any[] {
     const db = this.getDbData()
     const col = db[collection] || {}
-    
+
     return Object.entries(col).map(([k, v]) => {
       v["id"] = k
       return v
     })
+  }
+
+  public delete(collection: string, id: UUID): boolean {
+    const db = this.getDbData()
+    const col = db[collection] || {}
+
+    if (!(id.toString() in col)) return false
+
+    delete col[id.toString()]
+    db[collection] = col
+    this.saveDbData(db)
+    return true
   }
 }
