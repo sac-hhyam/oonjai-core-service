@@ -14,7 +14,14 @@ export class TestFSDatabase implements ITestDatabase {
         return JSON.parse(r)
       }
     }
-    return {}
+  }
+
+  private loadCollection(name: string): Record<string, any> {
+    if (!(name in this.dataMemory)) {
+      this.dataMemory[name] = {}
+    }
+
+    return this.dataMemory[name] as Record<string, any>
   }
 
   private saveDbData(data: Record<string, Record<string, any>>) {
@@ -51,30 +58,26 @@ export class TestFSDatabase implements ITestDatabase {
     return new UUID(uuid)
   }
 
-  public update(collection: string, id: UUID, data: any): boolean {
-    const db = this.getDbData()
-    const col = db[collection] || {}
-    
-    if (id.toString() in col) {
-      delete data["id"]
-      col[id.toString()] = data
-      db[collection] = col
-      
-      this.saveDbData(db)
-      return true
-    }
-    return false
+  public set(collection: string, id: UUID, data: any): boolean {
+    const col = this.loadCollection(collection)
+    delete data["id"]
+    col[id.toString()] = data
+    this.dataMemory[collection] = col
+    this.fsWrite()
+    return true
   }
 
-  public delete(collection: string, id: UUID): boolean {
-    const db = this.getDbData()
-    const col = db[collection] || {}
-    
+  public update(collection: string, id: UUID, data: Record<string, any>): boolean {
+    const col = this.loadCollection(collection)
     if (id.toString() in col) {
-      delete col[id.toString()] // Deletes the specific senior
-      db[collection] = col      // Updates the senior collection
-      
-      this.saveDbData(db)       // Writes the ENTIRE db back (including users)
+      delete data["id"]
+      const t = col[id.toString()] ?? {}
+      for (const [k,v] of Object.entries(data)){
+        if (v === undefined) continue
+        t[k] = v
+      }
+      this.dataMemory[collection] = col
+      this.fsWrite()
       return true
     }
     return false

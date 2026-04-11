@@ -30,6 +30,50 @@
       "createdAt": {
         "timeInMil": 1774428067824
       }
+    },
+    "caretaker": {
+      "a1b2c3d4-0001-0001-0001-000000000001": {
+        "userId": "a1b2c3d4-0001-0001-0001-000000000001",
+        "bio": "Experienced geriatric caretaker with hospital escort experience.",
+        "specialization": "Geriatric Care, Medical Escort",
+        "hourlyRate": 350,
+        "currency": "THB",
+        "experience": 5,
+        "rating": 4.8,
+        "reviewCount": 24,
+        "isVerified": true,
+        "isAvailable": true,
+        "contactInfo": "somchai@oonjai.com",
+        "permission": "standard"
+      },
+      "a1b2c3d4-0002-0002-0002-000000000002": {
+        "userId": "a1b2c3d4-0002-0002-0002-000000000002",
+        "bio": "Specializes in rehabilitation and home care for seniors.",
+        "specialization": "Rehab, Home Care",
+        "hourlyRate": 280,
+        "currency": "THB",
+        "experience": 3,
+        "rating": 4.5,
+        "reviewCount": 12,
+        "isVerified": true,
+        "isAvailable": true,
+        "contactInfo": "nipa@oonjai.com",
+        "permission": "standard"
+      },
+      "a1b2c3d4-0003-0003-0003-000000000003": {
+        "userId": "a1b2c3d4-0003-0003-0003-000000000003",
+        "bio": "Friendly companion for outings and daily activities.",
+        "specialization": "Outings, Companion Care",
+        "hourlyRate": 220,
+        "currency": "THB",
+        "experience": 2,
+        "rating": 4.2,
+        "reviewCount": 8,
+        "isVerified": false,
+        "isAvailable": true,
+        "contactInfo": "malee@oonjai.com",
+        "permission": "standard"
+      }
     }
   }
 }
