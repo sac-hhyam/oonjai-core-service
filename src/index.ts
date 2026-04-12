@@ -13,6 +13,8 @@ import {TestFSDatabase} from "./lib/TestFSDatabase"
 import {updateUser} from "@endpoint/users/updateUser"
 import {addSenior} from "@endpoint/seniors/addSenior"
 import {getAllSeniors} from "@endpoint/seniors/getAllSeniors"
+import {getSeniorById} from "@endpoint/seniors/getSeniorById"
+import {deleteSenior} from "@endpoint/seniors/deleteSenior"
 import {login} from "@endpoint/auth/login"
 import {register} from "@endpoint/auth/register"
 import {logout} from "@endpoint/auth/logout"
@@ -35,6 +37,12 @@ import {GoogleOauthService} from "@serv/oauth/GoogleOauthService"
 
 import {TestBookingRepository} from "@repo/TestBookingRepository"
 import {BookingService} from "@serv/BookingService"
+
+import {TestIncidentLogRepository} from "@repo/TestIncidentLogRepository"
+import {IncidentLogService} from "@serv/IncidentLogService"
+import {getIncidentLogs} from "@endpoint/incidentLogs/getIncidentLogs"
+import {createIncidentLog} from "@endpoint/incidentLogs/createIncidentLog"
+import {updateIncidentLog} from "@endpoint/incidentLogs/updateIncidentLog"
 import {getBookings} from "@endpoint/bookings/getBookings"
 import {createBooking} from "@endpoint/bookings/createBooking"
 import {getBookingById} from "@endpoint/bookings/getBookingById"
@@ -58,6 +66,7 @@ const seniorRepo = new TestSeniorRepository(db)
 const statusLogRepo = new TestStatusLogRepository(db) // ← new repository for status logs
 const statusLogService = new StatusLogService(statusLogRepo)  // ← removed bookingRepo dependency from StatusLogService constructor
 const bookingRepo = new TestBookingRepository(db)
+const incidentLogRepo = new TestIncidentLogRepository(db)
 const verificationRepo = new TestVerificationRepository(db)
 const oauthStateRepo = new MemoryOAuthStateRepository()
 
@@ -66,6 +75,7 @@ const jwtSessionService = new JWTSessionService(userRepo, process.env["JWT_SECRE
 const userService = new UserService(userRepo)
 const seniorManagementService = new SeniorManagementService(userRepo, seniorRepo)
 const bookingService = new BookingService(bookingRepo, userRepo)
+const incidentLogService = new IncidentLogService(incidentLogRepo, bookingRepo)
 const verificationService = new VerificationService(verificationRepo, userRepo)
 const authService = new AuthService(userService, jwtSessionService)
 const lineAuthService = new LineOauthService(
@@ -119,6 +129,12 @@ registry
   .register(confirmBooking, [bookingService])
   .register(endSession, [bookingService])
   .register(submitReview, [bookingService])
+  // Incident Logs
+  .register(getIncidentLogs, [incidentLogService, bookingService])
+  .register(createIncidentLog, [incidentLogService])
+  .register(updateIncidentLog, [incidentLogService])
+  .register(getSeniorById, [seniorManagementService])
+  .register(deleteSenior, [seniorManagementService])
   // Verifications
   .register(createVerification, [verificationService])
   .register(getPendingVerifications, [verificationService])
