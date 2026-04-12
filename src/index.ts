@@ -13,6 +13,8 @@ import {TestFSDatabase} from "./lib/TestFSDatabase"
 import {updateUser} from "@endpoint/users/updateUser"
 import {addSenior} from "@endpoint/seniors/addSenior"
 import {getAllSeniors} from "@endpoint/seniors/getAllSeniors"
+import {getSeniorById} from "@endpoint/seniors/getSeniorById"
+import {deleteSenior} from "@endpoint/seniors/deleteSenior"
 import {login} from "@endpoint/auth/login"
 import {register} from "@endpoint/auth/register"
 import {logout} from "@endpoint/auth/logout"
@@ -76,7 +78,6 @@ const router = new Router(jwtSessionService)
 const registry = new EndpointRegistry(router)
 const oauthReg = new OAuthRegistry(oauthStateRepo, [lineAuthService, googleAuthService])
 
-console.log(oauthReg)
 registry
 // Auth
 .register(login, [authService])
@@ -110,5 +111,7 @@ registry
   .register(confirmBooking, [bookingService])
   .register(endSession, [bookingService])
   .register(submitReview, [bookingService])
+  .register(getSeniorById, [seniorManagementService])
+  .register(deleteSenior, [seniorManagementService])
 
 serveBun(router, {port: 3000})
