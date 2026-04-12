@@ -1,6 +1,7 @@
 # dependencies (bun install)
 node_modules
 
+/.dist/
 # output
 out
 dist
@@ -30,11 +31,11 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # IntelliJ based IDEs
 .idea
 
+
 # Finder (MacOS) folder config
 .DS_Store
 
 .claude
-.dist
 
 database.json
 
