@@ -37,6 +37,12 @@ import {GoogleOauthService} from "@serv/oauth/GoogleOauthService"
 
 import {TestBookingRepository} from "@repo/TestBookingRepository"
 import {BookingService} from "@serv/BookingService"
+
+import {TestIncidentLogRepository} from "@repo/TestIncidentLogRepository"
+import {IncidentLogService} from "@serv/IncidentLogService"
+import {getIncidentLogs} from "@endpoint/incidentLogs/getIncidentLogs"
+import {createIncidentLog} from "@endpoint/incidentLogs/createIncidentLog"
+import {updateIncidentLog} from "@endpoint/incidentLogs/updateIncidentLog"
 import {getBookings} from "@endpoint/bookings/getBookings"
 import {createBooking} from "@endpoint/bookings/createBooking"
 import {getBookingById} from "@endpoint/bookings/getBookingById"
@@ -51,6 +57,12 @@ import {PaymentService} from "@serv/PaymentService"
 import {initiatePayment} from "@endpoint/payments/initiatePayment"
 import {getPaymentStatus} from "@endpoint/payments/getPaymentStatus"
 import {paymentWebhook} from "@endpoint/payments/paymentWebhook"
+// Verification
+import {TestVerificationRepository} from "@repo/TestVerificationRepository"
+import {VerificationService} from "@serv/VerificationService"
+import {createVerification} from "@endpoint/verifications/createVerification"
+import {getPendingVerifications} from "@endpoint/verifications/getPendingVerifications"
+import {updateVerification} from "@endpoint/verifications/updateVerification"
 
 // ── Infrastructure ────────────────────────────────────────────────────────────
 const db = new TestFSDatabase()
@@ -60,6 +72,8 @@ const statusLogRepo = new TestStatusLogRepository(db) // ← new repository for 
 const statusLogService = new StatusLogService(statusLogRepo)  // ← removed bookingRepo dependency from StatusLogService constructor
 const bookingRepo = new TestBookingRepository(db)
 const paymentRepo = new TestPaymentRepository(db)
+const incidentLogRepo = new TestIncidentLogRepository(db)
+const verificationRepo = new TestVerificationRepository(db)
 const oauthStateRepo = new MemoryOAuthStateRepository()
 
 // ── Services ──────────────────────────────────────────────────────────────────
@@ -68,6 +82,8 @@ const userService = new UserService(userRepo)
 const seniorManagementService = new SeniorManagementService(userRepo, seniorRepo)
 const bookingService = new BookingService(bookingRepo, userRepo)
 const paymentService = new PaymentService(paymentRepo, bookingRepo)
+const incidentLogService = new IncidentLogService(incidentLogRepo, bookingRepo)
+const verificationService = new VerificationService(verificationRepo, userRepo)
 const authService = new AuthService(userService, jwtSessionService)
 const lineAuthService = new LineOauthService(
   process.env["LINE_CHANNEL_ID"] ?? "",
@@ -126,5 +142,15 @@ registry
   .register(initiatePayment, [paymentService])
   .register(getPaymentStatus, [paymentService])
   .register(paymentWebhook, [paymentService])
+  // Incident Logs
+  .register(getIncidentLogs, [incidentLogService, bookingService])
+  .register(createIncidentLog, [incidentLogService])
+  .register(updateIncidentLog, [incidentLogService])
+  .register(getSeniorById, [seniorManagementService])
+  .register(deleteSenior, [seniorManagementService])
+  // Verifications
+  .register(createVerification, [verificationService])
+  .register(getPendingVerifications, [verificationService])
+  .register(updateVerification, [verificationService])
 
 serveBun(router, {port: 3000})
