@@ -13,6 +13,8 @@ import {TestFSDatabase} from "./lib/TestFSDatabase"
 import {updateUser} from "@endpoint/users/updateUser"
 import {addSenior} from "@endpoint/seniors/addSenior"
 import {getAllSeniors} from "@endpoint/seniors/getAllSeniors"
+import {getSeniorById} from "@endpoint/seniors/getSeniorById"
+import {deleteSenior} from "@endpoint/seniors/deleteSenior"
 import {login} from "@endpoint/auth/login"
 import {register} from "@endpoint/auth/register"
 import {logout} from "@endpoint/auth/logout"
@@ -122,5 +124,7 @@ registry
   .register(getIncidentLogs, [incidentLogService, bookingService])
   .register(createIncidentLog, [incidentLogService])
   .register(updateIncidentLog, [incidentLogService])
+  .register(getSeniorById, [seniorManagementService])
+  .register(deleteSenior, [seniorManagementService])
 
 serveBun(router, {port: 3000})
